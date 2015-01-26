@@ -1,0 +1,33 @@
+[Unit]
+Description=Fake Storage Service
+
+# Requirements
+Requires=docker.service
+
+# Dependency ordering
+After=docker.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker kill fake-storage-service
+ExecStartPre=-/usr/bin/docker rm fake-storage-service
+ExecStartPre=/usr/bin/docker pull jphastings/fake-storage-service
+ExecStart=/usr/bin/docker run --name fake-storage-service -p ${COREOS_PUBLIC_IPV4}:80:80 jphastings/fake-storage-service
+
+# Stop
+ExecStop=/usr/bin/docker stop fake-storage-service
+
+[X-Fleet]
+# Don't schedule on the same machine as other Apache instances
+X-Conflicts=fake-storage-service.*.service
