@@ -25,11 +25,10 @@ EnvironmentFile=/etc/environment
 ExecStartPre=-/usr/bin/docker kill hadiscover
 ExecStartPre=-/usr/bin/docker rm hadiscover
 ExecStartPre=/usr/bin/docker pull jphastings/hadiscover
-ExecStart=/usr/bin/docker run --name hadiscover -p ${COREOS_PUBLIC_IPV4}:80:80 jphastings/hadiscover
+ExecStart=/usr/bin/docker run --name hadiscover -p 80:80 -e HADISCOVER_ETCD=${COREOS_PRIVATE_IPV4}:4001 jphastings/hadiscover
 
 # Stop
 ExecStop=/usr/bin/docker stop hadiscover
 
 [X-Fleet]
-# Don't schedule on the same machine as other Apache instances
 X-Conflicts=hadiscover.*.service
