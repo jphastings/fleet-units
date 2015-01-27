@@ -1,5 +1,5 @@
 [Unit]
-Description=Fake Storage Service
+Description=Fake user service
 
 # Requirements
 Requires=docker.service
@@ -20,13 +20,13 @@ EnvironmentFile=/etc/environment
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker kill fake-storage-service
-ExecStartPre=-/usr/bin/docker rm fake-storage-service
-ExecStartPre=/usr/bin/docker pull jphastings/fake-storage-service
-ExecStart=/usr/bin/docker run --name fake-storage-service -p ${COREOS_PRIVATE_IPV4}:80 jphastings/fake-storage-service
+ExecStartPre=-/usr/bin/docker kill fake-user-service
+ExecStartPre=-/usr/bin/docker rm fake-user-service
+ExecStartPre=/usr/bin/docker pull jphastings/chameleon
+ExecStart=/usr/bin/docker run --name fake-user-service -e SERVICE_NAME=user-service -P jphastings/chameleon
 
 # Stop
-ExecStop=/usr/bin/docker stop fake-storage-service
+ExecStop=/usr/bin/docker stop fake-user-service
 
 [X-Fleet]
-X-Conflicts=fake-storage-service.*.service
+X-Conflicts=fake-user-service.*.service
